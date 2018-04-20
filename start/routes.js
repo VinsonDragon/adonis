@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +13,30 @@
 |
 */
 
-const Route = use('Route')
+const Route = use("Route");
 
-Route.on('/').render('welcome')
+Route.on("/").render("welcome");
+
+Route.get("/posts", "PostController.index");
+
+Route.post("/posts", "PostController.store");
+
+Route.get("/posts/:id", "PostController.show");
+
+Route.patch("/posts/:id", "PostController.updated");
+
+Route.delete("/posts/:id", "PostController.destroy");
+
+Route.get("/users", ({ request }) => {
+  switch (request.format()) {
+    case "json":
+      return [{ name: "wanghao" }, { name: "xiaoxue" }];
+    default:
+      return `--wanghao --xiaoxue`;
+  }
+}).formats(["json", "html"], true);
+
+Route.group(() => {
+  Route.get("/user", () => "manage users");
+  Route.get("/posts", () => "manage users");
+}).prefix("admin");
