@@ -17,26 +17,28 @@ const Route = use("Route");
 
 Route.on("/").render("welcome");
 
-Route.get("/posts", "PostController.index");
+// Route.get("/posts", "PostController.index");
 
-Route.post("/posts", "PostController.store");
+// Route.post("/posts", "PostController.store");
 
-Route.get("/posts/:id", "PostController.show");
+// Route.get("/posts/:id", "PostController.show");
 
-Route.patch("/posts/:id", "PostController.updated");
+// Route.patch("/posts/:id", "PostController.updated");
 
-Route.delete("/posts/:id", "PostController.destroy");
+// Route.delete("/posts/:id", "PostController.destroy");
 
-Route.get("/users", ({ request }) => {
-  switch (request.format()) {
-    case "json":
-      return [{ name: "wanghao" }, { name: "xiaoxue" }];
-    default:
-      return `--wanghao --xiaoxue`;
-  }
-}).formats(["json", "html"], true);
+// Route.get("/users", ({ request }) => {
+//   switch (request.format()) {
+//     case "json":
+//       return [{ name: "wanghao" }, { name: "xiaoxue" }];
+//     default:
+//       return `--wanghao --xiaoxue`;
+//   }
+// }).formats(["json", "html"], true);
 
-Route.group(() => {
-  Route.get("/user", () => "manage users");
-  Route.get("/posts", () => "manage users");
-}).prefix("admin");
+// Route.group(() => {
+//   Route.get("/user", () => "manage users");
+//   Route.get("/posts", () => "manage users");
+// }).prefix("admin");
+
+Route.get("/posts", ({ request, response }) => request.headers());
