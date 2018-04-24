@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 
 /*
 |--------------------------------------------------------------------------
@@ -9,36 +9,83 @@
 | routes for different URL's and bind Controller actions to them.
 |
 | A complete guide on routing is available here.
-| http://adonisjs.com/docs/4.0/routing
+| http://adonisjs.com/guides/routing
 |
 */
 
-const Route = use("Route");
+const Route = use('Route')
 
-Route.on("/").render("welcome");
+Route
+  .on('/').render('welcome')
 
-// Route.get("/posts", "PostController.index");
+//
+  // Route
+  //   .get('/posts', ({ request }) => request.get())
 
-// Route.post("/posts", "PostController.store");
+//
+  // Route.post('/posts', ({ request }) => request.post())
+  // Route.post('/posts', ({ request }) => request.all())
+  // Route.post('/posts', ({ request }) => request.only(['title', 'content']))
+  // Route.post('/posts', ({ request }) => request.except(['title', 'content']))
+  // Route.post('/posts', ({ request }) => request.input('status', 'draft'))
+  // Route.post('/posts', ({ request }) => request.only(['title', 'content']))
+  // Route.post('/posts', ({ request }) => request.collect(['title', 'content']))
 
-// Route.get("/posts/:id", "PostController.show");
+//
+  // Route.get('/posts', ({ request }) => request.headers())
+  // Route.get('/posts', ({ request }) => request.header('user-agent'))
 
-// Route.patch("/posts/:id", "PostController.updated");
+//
+  // Route.get('/posts', ({ request, response }) => {
+  //   // response.header('Content-type', 'text/plain')
+  //   response.type('text/plain')
+  //   return '<h1>List of posts.</h1>'
+  // })
 
-// Route.delete("/posts/:id", "PostController.destroy");
+//
+  // Route.get('/posts', ({ request, response }) => {
+  //   response.cookie('theme', 'dark')
+  //   response.clearCookie('theme')
+  //   return request.cookie('theme', 'light')
+  // })
 
-// Route.get("/users", ({ request }) => {
-//   switch (request.format()) {
-//     case "json":
-//       return [{ name: "wanghao" }, { name: "xiaoxue" }];
-//     default:
-//       return `--wanghao --xiaoxue`;
-//   }
-// }).formats(["json", "html"], true);
+//
+  // Route.get('/posts', ({ response }) => {
+  //   // response.send('List of posts.')
+  //   return {
+  //     title: 'List of posts.'
+  //   }
+  // })
 
-// Route.group(() => {
-//   Route.get("/user", () => "manage users");
-//   Route.get("/posts", () => "manage users");
-// }).prefix("admin");
+//
+  const delay = (data, time) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(data)
+      }, time)
+    })
+  }
+  
+  Route.get('/posts', async ({ response }) => {
+    const data = await delay(
+      'List of posts.',
+      3000
+    )
+    return data
+  })
 
-Route.get("/posts", ({ request, response }) => request.headers());
+//
+  // Route.get('/list-of-posts', ({ response }) => {
+  //   // response.redirect('/posts', true, 301)
+  //   response.route('list-of-posts')
+  // })
+  //
+  // Route.get('/list-of-food-posts', ({ response }) => {
+  //   // response.redirect('/posts', true, 301)
+  //   response.route('list-of-posts', { category: 'food' })
+  // })
+  //
+  // Route.get('/posts/:category?', ({ params }) => {
+  //   return `List of ${ params.category || 'default' } posts.`
+  // })
+  // .as('list-of-posts')
