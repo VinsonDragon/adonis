@@ -1,27 +1,26 @@
-"use strict";
+'use strict'
 
 class PostController {
-  index() {
-    return `List of post.`;
+  async index () {
   }
-  store() {
-    return `post has been created`;
+
+  async create () {
   }
-  show({ params }) {
-    return `you are watching post ${params.id}`;
+
+  async store () {
   }
-  updated({ params }) {
-    return `post ${params.id} has been updated`;
+
+  async show () {
   }
-  destroy({ params }) {
-    return `post ${params.id} has been remove`;
+
+  async edit () {
   }
-  create({}) {
-    return `create post`;
+
+  async update () {
   }
-  edit({ params }) {
-    return `${params.id} has been edit`;
+
+  async destroy () {
   }
 }
 
-module.exports = PostController;
+module.exports = PostController
