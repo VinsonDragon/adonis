@@ -7,7 +7,7 @@ class PostSchema extends Schema {
     this.create("posts", table => {
       table.increments();
       table.string("title");
-      table.text("conten", "longtext");
+      table.text("content", "longtext");
       table.timestamps();
     });
   }

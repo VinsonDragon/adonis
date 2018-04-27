@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 
 /*
 |--------------------------------------------------------------------------
@@ -13,11 +13,10 @@
 |
 */
 
-const Route = use("Route");
+const Route = use('Route')
 
-Route.on("/").render("welcome");
-
-Route.resource("posts", "PostController");
+Route.on('/').render('welcome')
+Route.resource('posts', 'PostController')
 //
 // Route
 //   .get('/posts', ({ request }) => request.get())
