@@ -1,20 +1,19 @@
-"use strict";
+'use strict'
 
-const Schema = use("Schema");
+const Schema = use('Schema')
 
 class PostSchema extends Schema {
-  up() {
-    this.create("posts", table => {
-      table.increments();
-      table.string("title");
-      table.text("content", "longtext");
-      table.timestamps();
-    });
+  up () {
+    this.create('posts', (table) => {
+      table.increments()
+      table.string('title')
+      table.timestamps()
+    })
   }
 
-  down() {
-    this.drop("posts");
+  down () {
+    this.drop('posts')
   }
 }
 
-module.exports = PostSchema;
+module.exports = PostSchema
