@@ -1,33 +1,60 @@
 "use strict";
 const Database = use("Database");
 const Post = use("App/Models/Post");
+const User = use("App/Models/User");
+const Tag = use("App/Models/Tag");
 
 class PostController {
   async index({ view }) {
-    const posts = await Post.all();
+    const posts = await Post.query()
+      .with("user", builder => {
+        builder.select("id", "username");
+      })
+      .with("user.profile")
+      .fetch();
+    console.log(posts.toJSON());
     // console.log(posts);
     // return posts;
     return view.render("post.index", { posts: posts.toJSON() });
   }
 
   async create({ view }) {
-    return view.render("post.create");
+    const user = await User.all();
+    const tags = await Tag.all();
+    return view.render("post.create", {
+      users: user.toJSON(),
+      tags: tags.toJSON()
+    });
   }
 
   async store({ request, response }) {
     const newPost = request.only(["title", "content"]);
+    const tags = request.input("tags");
     // const postID = await Database.insert(newPost).into("posts");
     // console.log("postID: ", postID);
-    const post = await Post.create(newPost);
+    // const post = await Post.create(newPost);
+
+    const user = await User.find(request.input("user_id"));
+    const post = await user.posts().create(newPost);
+
+    await post.tags().attach(tags);
     return response.redirect(`/posts/${post.id}`);
   }
 
   async show({ view, params }) {
-    // const post = await Database.from("posts")
-    //   .where("id", params.id)
-    //   .first();
+    // const post = await Database
+    //   .from('posts')
+    //   .where('id', params.id)
+    //   .first()
+
     const post = await Post.findOrFail(params.id);
-    return view.render("post.show", { post });
+
+    const tags = await post
+      .tags()
+      .select("id", "title")
+      .fetch();
+
+    return view.render("post.show", { post, tags: tags.toJSON() });
   }
 
   async edit({ view, params }) {
