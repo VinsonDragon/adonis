@@ -1,4 +1,4 @@
-(function () {
+(function() {
   "use strict";
 
   const deleteButton = $("#delete");
@@ -8,13 +8,15 @@
 
     $.ajax({
       url: `/posts/${id}`,
-      method: 'DELETE',
+      method: "DELETE",
       data: {
         _csrf
       },
-      success: (response) => {
-        console.log(response)
+      success: response => {
+        if (response === "success") {
+          window.location.href = "/posts";
+        }
       }
-    })
+    });
   });
 })();

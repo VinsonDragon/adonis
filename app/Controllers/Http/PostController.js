@@ -1,8 +1,11 @@
 "use strict";
+
 const Database = use("Database");
 const Post = use("App/Models/Post");
 const User = use("App/Models/User");
 const Tag = use("App/Models/Tag");
+const { validateAll } = use("Validator");
+const Route = use("Route");
 
 class PostController {
   async index({ view }) {
@@ -27,7 +30,18 @@ class PostController {
     });
   }
 
-  async store({ request, response }) {
+  async store({ request, response, session }) {
+    const rules = {
+      title: "required",
+      content: "required"
+    };
+
+    const validation = await validateAll(request.all(), rules);
+    if (validation.fails()) {
+      session.withErrors(validation.messages()).flashAll();
+      return response.redirect("back");
+    }
+
     const newPost = request.only(["title", "content"]);
     const tags = request.input("tags");
     // const postID = await Database.insert(newPost).into("posts");
@@ -58,11 +72,42 @@ class PostController {
   }
 
   async edit({ view, params }) {
-    // const post = await Database.from("posts")
-    //   .where("id", params.id)
-    //   .first();
-    const post = await Post.findOrFail(params.id);
-    return view.render("post.edit", { post: post.toJSON() });
+    // const post = await Database
+    //   .from('posts')
+    //   .where('id', params.id)
+    //   .first()
+
+    const _post = await Post.findOrFail(params.id);
+
+    const _users = await User.all();
+    const users = _users.toJSON();
+    const _tags = await Tag.all();
+    const tags = _tags.toJSON();
+    await _post.load("tags");
+    const post = _post.toJSON();
+    const postTagIds = post.tags.map(tag => tag.id);
+
+    const tagItems = tags.map(tag => {
+      if (postTagIds.includes(tag.id)) {
+        tag.checked = true;
+      }
+
+      return tag;
+    });
+
+    const userItems = users.map(user => {
+      if (user.id === post.user_id) {
+        user.checked = true;
+      }
+
+      return user;
+    });
+
+    return view.render("post.edit", {
+      post,
+      users: userItems,
+      tags: tagItems
+    });
   }
 
   async update({ request, params, response }) {
@@ -81,7 +126,13 @@ class PostController {
     //   .where("id", params.id)
     //   .delete();
     const post = await Post.findOrFail(params.id);
-    post.delete();
+
+    try {
+      await post.tags().detach();
+      await post.delete();
+    } catch (error) {
+      console.log(error);
+    }
     return "success";
   }
 }
