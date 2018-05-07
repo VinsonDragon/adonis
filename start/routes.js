@@ -13,28 +13,44 @@
 |
 */
 
-const Route = use("Route");
-const Profile = use("App/Models/Profile");
+const Route = use('Route')
+const Profile = use('App/Models/Profile')
 
-Route.on("/").render("welcome");
-Route.get("register", "UserController.create").as("signup");
-Route.get("users/create", ({ response }) => response.route("signup"));
+Route.on('/').render('welcome')
 
-Route.resource("posts", "PostController");
-Route.resource("users", "UserController");
-Route.resource("tags", "TagController");
+Route.get('register', 'UserController.create').as('signup')
 
-Route.get("profiles/:id", async ({ params }) => {
-  const profile = await Profile.find(params.id);
+Route
+  .get('users/create', ({
+    response
+  }) => response.route('signup'))
+
+Route.resource('posts', 'PostController')
+Route.resource('users', 'UserController')
+Route.resource('tags', 'TagController')
+Route.post('logout', 'AuthController.logout').as('logout')
+
+Route.get('login', 'AuthController.login').as('login')
+
+Route.post('auth', 'AuthController.auth').as('auth')
+
+Route
+  .get('register', 'UserController.create')
+  .as('signup')
+Route.get('profiles/:id', async ({
+  params
+}) => {
+  const profile = await Profile.find(params.id)
   const user = await profile
     .user()
-    .select("username")
-    .fetch();
+    .select('username')
+    .fetch()
+
   return {
     profile,
     user
-  };
-});
+  }
+})
 //
 // Route
 //   .get('/posts', ({ request }) => request.get())

@@ -15,17 +15,20 @@ class PostController {
       })
       .with("user.profile")
       .fetch();
+
     console.log(posts.toJSON());
-    // console.log(posts);
-    // return posts;
-    return view.render("post.index", { posts: posts.toJSON() });
+    // console.log(posts)
+    // return posts
+    return view.render("post.index", {
+      posts: posts.toJSON()
+    });
   }
 
   async create({ view }) {
-    const user = await User.all();
+    const users = await User.all();
     const tags = await Tag.all();
     return view.render("post.create", {
-      users: user.toJSON(),
+      users: users.toJSON(),
       tags: tags.toJSON()
     });
   }
@@ -37,21 +40,24 @@ class PostController {
     };
 
     const validation = await validateAll(request.all(), rules);
+
     if (validation.fails()) {
       session.withErrors(validation.messages()).flashAll();
+
       return response.redirect("back");
     }
 
     const newPost = request.only(["title", "content"]);
     const tags = request.input("tags");
-    // const postID = await Database.insert(newPost).into("posts");
-    // console.log("postID: ", postID);
-    // const post = await Post.create(newPost);
+    // const postID = await Database.insert(newPost).into('posts')
+    // console.log('postID: ', postID)
+    // const post = await Post.create(newPost)
 
     const user = await User.find(request.input("user_id"));
     const post = await user.posts().create(newPost);
 
     await post.tags().attach(tags);
+
     return response.redirect(`/posts/${post.id}`);
   }
 
@@ -68,7 +74,10 @@ class PostController {
       .select("id", "title")
       .fetch();
 
-    return view.render("post.show", { post, tags: tags.toJSON() });
+    return view.render("post.show", {
+      post,
+      tags: tags.toJSON()
+    });
   }
 
   async edit({ view, params }) {
@@ -110,22 +119,42 @@ class PostController {
     });
   }
 
-  async update({ request, params, response }) {
-    const updatedPost = request.only(["title", "content"]);
-    // await Database.table("posts")
-    //   .where("id", params.id)
-    //   .update(updatedPost);
+  async update({ request, params, session, response }) {
+    const { title, content, user_id, tags } = request.all();
+    // await Database
+    //   .table('posts')
+    //   .where('id', params.id)
+    //   .update(updatedPost)
+
     const post = await Post.findOrFail(params.id);
-    post.merge(updatedPost);
-    post.save();
-    return response.redirect(`/posts/${params.id}`);
+    post.merge({
+      title,
+      content
+    });
+    await post.save();
+
+    const user = await User.find(user_id);
+    await post.user().associate(user);
+
+    await post.tags().sync(tags);
+
+    session.flash({
+      type: "primary",
+      message: `Post updated. <a href="${Route.url("PostController.show", {
+        id: post.id
+      })}" class="alert-link">Preview post.</a>`
+    });
+
+    return response.redirect("back");
   }
 
   async destroy({ request, params }) {
-    // await Database.table("posts")
-    //   .where("id", params.id)
-    //   .delete();
-    const post = await Post.findOrFail(params.id);
+    // await Database
+    //   .table('posts')
+    //   .where('id', params.id)
+    //   .delete()
+
+    const post = await Post.find(params.id);
 
     try {
       await post.tags().detach();
@@ -133,6 +162,7 @@ class PostController {
     } catch (error) {
       console.log(error);
     }
+
     return "success";
   }
 }
