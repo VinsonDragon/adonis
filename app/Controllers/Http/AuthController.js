@@ -1,16 +1,16 @@
-'use strict'
+"use strict";
 
 const {
   validateAll
-} = use('Validator')
+} = use("Validator");
 
 class AuthController {
   async logout({
     auth,
     response
   }) {
-    await auth.logout()
-    return response.redirect('back')
+    await auth.logout();
+    return response.redirect("back");
   }
 
   async login({
@@ -19,12 +19,12 @@ class AuthController {
     response
   }) {
     try {
-      await auth.check()
+      await auth.check();
     } catch (error) {
-      return view.render('auth.login')
+      return view.render("auth.login");
     }
 
-    return response.redirect('back')
+    return response.redirect("back");
   }
 
   async auth({
@@ -34,33 +34,31 @@ class AuthController {
     session
   }) {
     const rules = {
-      username: 'required',
-      password: 'required'
-    }
+      username: "required",
+      password: "required"
+    };
 
-    const validation = await validateAll(request.all(), rules)
+    const validation = await validateAll(request.all(), rules);
 
     if (validation.fails()) {
-      session
-        .withErrors(validation.messages())
-        .flashAll()
+      session.withErrors(validation.messages()).flashAll();
 
-      return response.redirect('back')
+      return response.redirect("back");
     }
 
     const {
       username,
       password
-    } = request.all()
+    } = request.all();
 
-    await auth.attempt(username, password)
+    await auth.attempt(username, password);
 
-    const user = await auth.getUser()
+    const user = await auth.getUser();
 
-    return response.route('UserController.show', {
+    return response.route("UserController.show", {
       id: user.id
-    })
+    });
   }
 }
 
-module.exports = AuthController
+module.exports = AuthController;
