@@ -16,9 +16,9 @@
 const Route = use('Route')
 const Profile = use('App/Models/Profile')
 
-// Route.on('/').render('AuthController.login')
 Route.get('/', 'AuthController.login').as('login')
 Route.get('upload', 'FileController.create').as('upload')
+Route.get('file/:id/download', 'FileController.download').as('files.download')
 
 Route.resource('files', 'FileController')
 
